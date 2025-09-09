@@ -1,0 +1,646 @@
+/* Telegram Raffle Stars - Стили */
+
+:root {
+  --primary-color: #1a1a2e;
+  --secondary-color: #16213e;
+  --accent-color: #0f4c75;
+  --highlight-color: #3282b8;
+  --gold-color: #ffd700;
+  --text-light: #ffffff;
+  --text-muted: #b3b3b3;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --warning-color: #ff9800;
+  --shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --border-radius: 16px;
+  --small-radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Утилитные классы */
+.hidden {
+  display: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Экран загрузки */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid var(--text-light);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Основной экран */
+.main-screen {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Верхняя панель статистики */
+.top-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.stat-item.center {
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+/* Прогресс-бар */
+.progress-container {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--small-radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--highlight-color), var(--gold-color));
+  width: 0%;
+  transition: width 0.5s ease-in-out;
+  border-radius: var(--small-radius);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Главная кнопка ставки */
+.bid-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.bid-button {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--highlight-color), var(--gold-color));
+  color: var(--text-light);
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 123, 184, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.bid-button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 12px 32px rgba(0, 123, 184, 0.6);
+}
+
+.bid-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.bid-button:disabled {
+  background: linear-gradient(135deg, #666, #888);
+  cursor: not-allowed;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.bid-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.bid-button:active:not(:disabled)::before {
+  width: 300px;
+  height: 300px;
+}
+
+.bid-text {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.bid-amount {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Пульсация для готовой кнопки */
+.bid-button.ready {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 8px 24px rgba(0, 123, 184, 0.4);
+  }
+  50% {
+    box-shadow: 0 12px 32px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 8px 24px rgba(0, 123, 184, 0.4);
+  }
+}
+
+/* Информационная панель */
+.info-panel {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.info-value {
+  color: var(--text-light);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Секция победителей */
+.winners-section {
+  margin-bottom: 20px;
+}
+
+.winners-section h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.winners-list {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+}
+
+.winner-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.winner-item:last-child {
+  border-bottom: none;
+}
+
+.winner-info {
+  display: flex;
+  align-items: center;
+}
+
+.winner-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--highlight-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.winner-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.winner-prize {
+  color: var(--gold-color);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.no-winners {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 20px;
+}
+
+/* Правила игры */
+.rules-section h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.rules-list {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  list-style: none;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+}
+
+.rules-list li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  position: relative;
+  padding-left: 25px;
+}
+
+.rules-list li::before {
+  content: '•';
+  color: var(--highlight-color);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* Экран победы */
+.win-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.win-content {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--border-radius);
+  padding: 40px 30px;
+  text-align: center;
+  max-width: 300px;
+  width: 90%;
+  animation: winPopup 0.5s ease-out;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+@keyframes winPopup {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.win-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
+.win-content h2 {
+  color: var(--gold-color);
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.win-prize {
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--gold-color);
+  margin: 20px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.continue-button {
+  background: var(--highlight-color);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--small-radius);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.continue-button:hover {
+  background: var(--gold-color);
+  color: var(--primary-color);
+}
+
+/* Экран ошибки */
+.error-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.error-content {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--border-radius);
+  padding: 40px 30px;
+  text-align: center;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.error-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  color: var(--error-color);
+}
+
+.error-content h3 {
+  color: var(--error-color);
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.retry-button {
+  background: var(--error-color);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--small-radius);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #d32f2f;
+}
+
+/* Уведомления */
+.notifications-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.notification {
+  background: var(--primary-color);
+  border-radius: var(--small-radius);
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border-left: 4px solid var(--highlight-color);
+  animation: slideInDown 0.5s ease-out;
+  pointer-events: auto;
+  position: relative;
+}
+
+.notification.success {
+  border-left-color: var(--success-color);
+}
+
+.notification.error {
+  border-left-color: var(--error-color);
+}
+
+.notification.warning {
+  border-left-color: var(--warning-color);
+}
+
+@keyframes slideInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.notification-message {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.notification-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Адаптивность */
+@media (max-width: 360px) {
+  .app {
+    padding: 15px;
+  }
+  
+  .bid-button {
+    width: 160px;
+    height: 160px;
+    font-size: 20px;
+  }
+  
+  .bid-text {
+    font-size: 24px;
+  }
+  
+  .top-stats {
+    padding: 10px;
+  }
+  
+  .stat-value {
+    font-size: 14px;
+  }
+}
+
+@media (max-height: 600px) {
+  .bid-container {
+    margin: 20px 0;
+  }
+  
+  .winners-section,
+  .rules-section {
+    margin-bottom: 15px;
+  }
+}
+
+/* Анимации для подключения */
+.connected {
+  animation: connectedPulse 0.5s ease-out;
+}
+
+@keyframes connectedPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Стили для участия */
+.participating {
+  background: linear-gradient(135deg, var(--success-color), #66bb6a) !important;
+}
+
+.participating .bid-text::after {
+  content: ' ✓';
+  color: var(--text-light);
+}

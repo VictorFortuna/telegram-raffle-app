@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель - Telegram Raffle Stars</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #3282b8;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-primary:hover {
+            background: #2567a3;
+            border-color: #2567a3;
+        }
+
+        .table-dark {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .nav-pills .nav-link {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--accent-color);
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(50, 130, 184, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .pagination .page-link {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .badge {
+            font-size: 0.75em;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            padding: 10px 15px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 0.875rem;
+        }
+
+        .connection-status.connected {
+            background: var(--success-color);
+        }
+
+        .connection-status.disconnected {
+            background: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Статус подключения -->
+    <div id="connection-status" class="connection-status disconnected">
+        <i class="fas fa-circle me-1"></i>
+        <span>Отключено</span>
+    </div>
+
+    <!-- Экран входа -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <h2>🎲 Админ панель</h2>
+                <p class="text-muted">Telegram Raffle Stars</p>
+            </div>
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя</label>
+                    <input type="text" class="form-control" id="username" placeholder="Введите имя пользователя" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <span class="btn-text">Войти</span>
+                    <span class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                </button>
+            </form>
+            <div id="login-error" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+    </div>
+
+    <!-- Главная панель -->
+    <div id="admin-panel" class="d-none">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Боковое меню -->
+                <div class="col-md-3 col-lg-2">
+                    <div class="sidebar">
+                        <div class="d-flex align-items-center mb-4">
+                            <h5 class="mb-0">🎲 Админ панель</h5>
+                        </div>
+                        
+                        <ul class="nav nav-pills flex-column" id="admin-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="pill" href="#dashboard">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Дашборд
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#raffles">
+                                    <i class="fas fa-dice me-2"></i>Лотереи
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#users">
+                                    <i class="fas fa-users me-2"></i>Пользователи
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#settings">
+                                    <i class="fas fa-cog me-2"></i>Настройки
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#broadcast">
+                                    <i class="fas fa-bullhorn me-2"></i>Рассылка
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="pill" href="#audit">
+                                    <i class="fas fa-history me-2"></i>Логи
+                                </a>
+                            </li>
+                            <li class="nav-item mt-3">
+                                <a class="nav-link text-danger" href="#" id="logout-btn">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Основной контент -->
+                <div class="col-md-9 col-lg-10">
+                    <div class="main-content">
+                        <div class="tab-content" id="admin-content">
+                            
+                            <!-- Дашборд -->
+                            <div class="tab-pane fade show active" id="dashboard">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>📊 Дашборд</h3>
+                                    <button class="btn btn-outline-primary" id="refresh-dashboard">
+                                        <i class="fas fa-sync-alt"></i> Обновить
+                                    </button>
+                                </div>
+
+                                <!-- Статистика -->
+                                <div class="row" id="stats-cards">
+                                    <!-- Карточки статистики будут добавлены динамически -->
+                                </div>
+
+                                <!-- Графики и таблицы -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>🏆 Недавние победители</h5>
+                                            </div>
+                                            <div class="card-body" id="recent-winners">
+                                                <div class="loading-spinner">
+                                                    <div class="spinner-border" role="status"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>🔌 Активные подключения</h5>
+                                            </div>
+                                            <div class="card-body" id="active-connections">
+                                                <div class="loading-spinner">
+                                                    <div class="spinner-border" role="status"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Лотереи -->
+                            <div class="tab-pane fade" id="raffles">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h3>🎲 Управление лотереями</h3>
+                                    <div>
+                                        <button class="btn btn-success" id="create-raffle-btn">
+                                            <i class="fas fa-plus"></i> Создать лотерею
+                                        </button>
+                                        <button class="btn btn-outline-primary" id="refresh-raffles">
+                                            <i class="fas fa-sync-alt"></i> Обновить
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Фильтры -->
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <select class="form-select" id="raffle-status-filter">
+                                            <option value="">Все статусы</option>
+                                            <option value="active">Активные</option>
+                                            <option value="completed">Завершенные</option>
+                                            <option value="cancelled">Отмененные</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Таблица лотерей -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-dark table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Статус</th>
+                                                        <th>Участники</th>
+                                                        <th>Банк</th>
+                                                        <th>Победитель</th>
+                                                        <th>Создана</th>
+                                                        <th>Действия</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="raffles-table">
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">
+                                                            <div class="spinner-border" role="status"></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <!-- Пагинация -->
+                                        <nav>
+                                            <ul class="pagination justify-content-center" id="raffles-pagination"></ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Остальные вкладки будут добавлены аналогично -->
+                            <div class="tab-pane fade" id="users">
+                                <h3>👥 Пользователи</h3>
+                                <p>Управление пользователями - в разработке</p>
+                            </div>
+
+                            <div class="tab-pane fade" id="settings">
+                                <h3>⚙️ Настройки лотереи</h3>
+                                
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Текущие настройки</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="settings-form">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Участников для запуска</label>
+                                                        <input type="number" class="form-control" id="required_participants" min="2" max="100">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Размер ставки (звезды)</label>
+                                                        <input type="number" class="form-control" id="bid_amount" min="1" max="1000">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Процент победителю (%)</label>
+                                                        <input type="number" class="form-control" id="winner_percentage" min="10" max="90" step="0.01">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Процент администратору (%)</label>
+                                                        <input type="number" class="form-control" id="admin_percentage" min="10" max="90" step="0.01">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save"></i> Сохранить настройки
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="broadcast">
+                                <h3>📢 Рассылка</h3>
+                                <p>Массовые уведомления - в разработке</p>
+                            </div>
+
+                            <div class="tab-pane fade" id="audit">
+                                <h3>📋 Логи аудита</h3>
+                                <p>Журнал действий - в разработке</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Admin JS -->
+    <script src="/js/admin.js"></script>
+</body>
+</html>

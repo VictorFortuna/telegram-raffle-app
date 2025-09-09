@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Raffle Stars</title>
+    
+    <!-- Telegram Mini App script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Socket.IO для реального времени -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Мета-теги для Telegram Mini App -->
+    <meta name="telegram-web-app" content="height=600">
+    <meta name="theme-color" content="#1a1a2e">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- Загрузка -->
+        <div id="loading" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Загрузка...</p>
+        </div>
+
+        <!-- Основной интерфейс -->
+        <div id="main-screen" class="main-screen hidden">
+            <!-- Верхняя панель статистики -->
+            <div class="top-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Ваши звезды</span>
+                    <span id="user-stars" class="stat-value">⭐ 0</span>
+                </div>
+                <div class="stat-item center">
+                    <span class="stat-label">Нужно участников</span>
+                    <span id="required-participants" class="stat-value">10</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Участвует</span>
+                    <span id="current-participants" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <!-- Прогресс-бар -->
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-text" class="progress-text">Ожидаем участников...</p>
+            </div>
+
+            <!-- Главная кнопка ставки -->
+            <div class="bid-container">
+                <button id="bid-button" class="bid-button" disabled>
+                    <span class="bid-text">СТАВКА</span>
+                    <span id="bid-amount" class="bid-amount">1 ⭐</span>
+                </button>
+            </div>
+
+            <!-- Информационная панель -->
+            <div class="info-panel">
+                <div class="info-row">
+                    <span class="info-label">Всего пользователей:</span>
+                    <span id="total-users" class="info-value">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Банк лотереи:</span>
+                    <span id="total-prize" class="info-value">0 ⭐</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Вы участвуете:</span>
+                    <span id="user-participation" class="info-value">Нет</span>
+                </div>
+            </div>
+
+            <!-- Последние победители -->
+            <div class="winners-section">
+                <h3>🏆 Недавние победители</h3>
+                <div id="recent-winners" class="winners-list">
+                    <!-- Динамически заполняется -->
+                </div>
+            </div>
+
+            <!-- Правила игры -->
+            <div class="rules-section">
+                <h3>📋 Правила игры</h3>
+                <ul class="rules-list">
+                    <li>Сделайте ставку в Telegram Stars</li>
+                    <li>Дождитесь набора необходимого количества участников</li>
+                    <li>Победитель определяется честным алгоритмом</li>
+                    <li>Победитель получает 70% от банка</li>
+                    <li>Каждый может участвовать только один раз в лотерее</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Экран победы -->
+        <div id="win-screen" class="win-screen hidden">
+            <div class="win-content">
+                <div class="win-icon">🎉</div>
+                <h2>ПОЗДРАВЛЯЕМ!</h2>
+                <p>Вы выиграли в лотерее!</p>
+                <div class="win-prize">
+                    <span id="win-amount">0 ⭐</span>
+                </div>
+                <p>Приз уже зачислен на ваш счет!</p>
+                <button id="continue-button" class="continue-button">Продолжить</button>
+            </div>
+        </div>
+
+        <!-- Экран ошибки -->
+        <div id="error-screen" class="error-screen hidden">
+            <div class="error-content">
+                <div class="error-icon">⚠️</div>
+                <h3>Произошла ошибка</h3>
+                <p id="error-message">Попробуйте позже</p>
+                <button id="retry-button" class="retry-button">Попробовать снова</button>
+            </div>
+        </div>
+
+        <!-- Уведомления -->
+        <div id="notifications" class="notifications-container">
+            <!-- Динамически создаются уведомления -->
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/js/config.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/socket.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/app.js"></script>
+    
+    <script>
+        // Инициализация Telegram Web App
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webapp = window.Telegram.WebApp;
+            
+            // Настраиваем тему
+            webapp.setBackgroundColor('#1a1a2e');
+            webapp.setHeaderColor('#16213e');
+            
+            // Расширяем на весь экран
+            webapp.expand();
+            
+            // Показываем главную кнопку если нужно
+            webapp.MainButton.hide();
+            
+            console.log('Telegram WebApp initialized');
+        }
+    </script>
+</body>
+</html>
